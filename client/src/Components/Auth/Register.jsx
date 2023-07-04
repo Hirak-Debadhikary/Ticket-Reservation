@@ -1,46 +1,7 @@
-// // import React from "react";
-
-// // const Register = () => {
-// //   return (
-// //     <div>
-// //       <h1>Register</h1>
-// //     </div>
-// //   );
-// // };
-
-// // export default Register;
-
-// import React from "react";
-// import { connect } from "react-redux";
-// import { signupSuccess } from "../../Redux/Actions/signupActions";
-
-// const Register = ({ signupSuccess }) => {
-//   const handleSignup = () => {
-//     const user = { id: 1, username: "exampleUser" };
-//     signupSuccess(user);
-//     alert("Signup");
-//     console.log(user);
-//   };
-
-//   return (
-//     <>
-//       <h2>Signup Page</h2>
-//       <button onClick={handleSignup}>Signup</button>
-//     </>
-//   );
-// };
-
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     signupSuccess: (user) => dispatch(signupSuccess(user)),
-//   };
-// };
-
-// export default connect(null, mapDispatchToProps)(Register);
-
-import React from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
-import { signupSuccess } from "../../Redux/Actions/signupActions";
+import { signup } from "../../Redux/Actions/signupActions";
+
 import {
   Box,
   Heading,
@@ -50,12 +11,25 @@ import {
   Button,
 } from "@chakra-ui/react";
 
-const Register = ({ signupSuccess }) => {
-  const handleSignup = () => {
-    const user = { id: 1, username: "exampleUser" };
-    signupSuccess(user);
-    alert("Signup");
-    console.log(user);
+const Register = ({ signup, error }) => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const { name, email, password } = formData;
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    signup(formData);
   };
 
   return (
@@ -63,7 +37,6 @@ const Register = ({ signupSuccess }) => {
       maxW="400px"
       m="auto"
       p="6"
-      // border="1px solid red"
       mt="5rem"
       textAlign="center"
       borderRadius="10px"
@@ -74,37 +47,58 @@ const Register = ({ signupSuccess }) => {
         Signup Page
       </Heading>
 
-      <FormControl id="name" mb="4" isRequired>
-        <FormLabel>Name</FormLabel>
-        <Input type="text" placeholder="Enter your name" bg="white" />
-      </FormControl>
+      <form onSubmit={handleSubmit}>
+        <FormControl id="name" mb="4" isRequired>
+          <FormLabel>Name</FormLabel>
+          <Input
+            type="text"
+            placeholder="Enter your name"
+            bg="white"
+            name="name"
+            value={name}
+            onChange={handleChange}
+          />
+        </FormControl>
 
-      <FormControl id="email" mb="4" isRequired>
-        <FormLabel>Email</FormLabel>
-        <Input type="email" placeholder="Enter your Email" bg="white" />
-      </FormControl>
+        <FormControl id="email" mb="4" isRequired>
+          <FormLabel>Email</FormLabel>
+          <Input
+            type="email"
+            placeholder="Enter your Email"
+            bg="white"
+            name="email"
+            value={email}
+            onChange={handleChange}
+          />
+        </FormControl>
 
-      <FormControl id="password" mb="4" isRequired>
-        <FormLabel>Password</FormLabel>
-        <Input type="password" placeholder="Enter your password" bg="white" />
-      </FormControl>
+        <FormControl id="password" mb="4" isRequired>
+          <FormLabel>Password</FormLabel>
+          <Input
+            type="password"
+            placeholder="Enter your password"
+            bg="white"
+            name="password"
+            value={password}
+            onChange={handleChange}
+          />
+        </FormControl>
 
-      <Button
-        colorScheme="blue"
-        onClick={handleSignup}
-        width="50%"
-        borderRadius="30px"
-      >
-        Signup
-      </Button>
+        <Button
+          type="submit"
+          colorScheme="blue"
+          width="50%"
+          borderRadius="30px"
+        >
+          Signup
+        </Button>
+      </form>
     </Box>
   );
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    signupSuccess: (user) => dispatch(signupSuccess(user)),
-  };
-};
+const mapStateToProps = (state) => ({
+  error: state.auth.error,
+});
 
-export default connect(null, mapDispatchToProps)(Register);
+export default connect(mapStateToProps, { signup })(Register);
